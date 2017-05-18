@@ -5,7 +5,7 @@
  */
 package dzikizachod.Gracze;
 
-import dzikizachod.Strategie.Bandyci.StrategiaBandytyDomyslna;
+import dzikizachod.Strategie.StrategiaBandytyDomyslna;
 import dzikizachod.Strategie.Strategia;
 
 /**

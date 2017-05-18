@@ -17,9 +17,9 @@ import java.util.List;
  */
 public class Gra {
     Gra() {
-        
+        gracze = new ArrayList<>();
     }
-    private ArrayList<Gracz> gracze;
+    private final ArrayList<Gracz> gracze;
     private PulaAkcji pulaAkcji;
     private int numerSzeryfa;
     
@@ -72,12 +72,21 @@ public class Gra {
     
     private void drukujTurę(int numerTury) {
         System.out.println("** TURA " + numerTury);
-        String wcięcie = "  ";
     }
     
     private void drukujKoniec() {
-        if (koniecGry()) {
-            
+        System.out.println("** KONIEC");
+        String wcięcie = "  ";
+        if(!koniecGry()) {
+            System.out.println(wcięcie + "REMIS - OSIĄGNIĘTO LIMIT TUR");
+            return;
+        }
+        System.out.println(wcięcie + "WYGRANA STRONA: ");
+        if (bandyciNieŻyją()) {
+            System.out.println("szeryf i pomocnicy");
+        }
+        else {
+            System.out.println("bandyci");
         }
     }
     
@@ -86,7 +95,7 @@ public class Gra {
     }
     
     private boolean przeprowadźTurę(int numerTury) {
-        System.out.println("** Tura " + numerTury);
+        drukujTurę(numerTury);
         String wcięcie = "  ";
         
         for (Gracz g : gracze) {
@@ -119,7 +128,10 @@ public class Gra {
     }
     
     public void rozgrywka(List<Gracz> listaGraczy, PulaAkcji pulaAkcji) {
-        Collections.copy(gracze, listaGraczy);
+        
+        for (Gracz i : listaGraczy) {
+            gracze.add(i.klonujGracza());
+        }
         Collections.shuffle(gracze);
         
         this.pulaAkcji = pulaAkcji.kopiujPulę();

@@ -6,7 +6,7 @@
 package dzikizachod.Gracze;
 
 import dzikizachod.Strategie.Strategia;
-import dzikizachod.Strategie.Szeryf.StrategiaSzeryfaDomyslna;
+import dzikizachod.Strategie.StrategiaSzeryfaDomyslna;
 
 /**
  *

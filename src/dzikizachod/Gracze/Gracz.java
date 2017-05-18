@@ -38,6 +38,27 @@ public abstract class Gracz {
         zasięg = 1;
     }
     
+    public Gracz klonujGracza() {
+        Gracz nowyGracz;
+        switch (toString()) {
+            case "Szeryf":
+                nowyGracz = new Szeryf(strategia);
+                break;
+            case "Bandyta":
+                nowyGracz = new Bandyta(strategia);
+                break;
+            case "Pomocnik Szeryfa":
+                nowyGracz = new PomocnikSzeryfa(strategia);
+                break;
+            default:
+                nowyGracz = new Bandyta(strategia);
+                assert(false);
+                break;
+        }
+        
+        return nowyGracz;
+    }
+    
     public boolean czyŻyje() {
         return żyje;
     }

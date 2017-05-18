@@ -5,7 +5,7 @@
  */
 package dzikizachod.Gracze;
 
-import dzikizachod.Strategie.Pomocnicy.StrategiaPomocnikaSzeryfaDomyslna;
+import dzikizachod.Strategie.StrategiaPomocnikaSzeryfaDomyslna;
 import dzikizachod.Strategie.Strategia;
 
 /**
