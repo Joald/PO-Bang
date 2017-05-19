@@ -7,47 +7,46 @@ package dzikizachod.Strategie;
 
 import dzikizachod.Akcja;
 import dzikizachod.Gracze.Gracz;
-import java.util.ArrayList;
+import dzikizachod.ListaGraczy;
+import java.util.List;
 
 /**
  *
  * @author joald_000
  */
 public abstract class Strategia {
-    public final void zdecydujRuch(Akcja ruch, ArrayList<Gracz> listaGraczy, int numerGracza) {
+    public final boolean zdecydujRuch(Akcja ruch, ListaGraczy listaGraczy, int numerGracza) {
         switch(ruch) {
             case DYNAMIT:
-                rzućDynamit(listaGraczy.get(numerGracza));
-                break;
+                return rzućDynamit(listaGraczy, numerGracza);
             case STRZEL:
-                zdecydujStrzał(listaGraczy, numerGracza);
-                break;
+                return zdecydujStrzał(listaGraczy, numerGracza);
             case ULECZ:
-                zdecydujLeczenie(listaGraczy, numerGracza);
-                break;
+                return zdecydujLeczenie(listaGraczy, numerGracza);
             case ZASIEG_PLUS_JEDEN:
-                zdecydujZasięgPlusJeden(listaGraczy.get(numerGracza));
-                break;
+                return zdecydujZasięgPlusJeden(listaGraczy.get(numerGracza));
             case ZASIEG_PLUS_DWA:
-                zdecydujZasięgPlusDwa(listaGraczy.get(numerGracza));
-                break;
+                return zdecydujZasięgPlusDwa(listaGraczy.get(numerGracza));
             default:
                 throw new AssertionError(ruch.name());
                 
         }
     }
     
-    private void zdecydujZasięgPlusJeden(Gracz sprawca) {
+    private boolean zdecydujZasięgPlusJeden(Gracz sprawca) {
         sprawca.zwiększZasięg(1);
+        return true;
     }
-    private void zdecydujZasięgPlusDwa(Gracz sprawca) {
+    private boolean zdecydujZasięgPlusDwa(Gracz sprawca) {
         sprawca.zwiększZasięg(2);
+        return true;
     }
-    protected abstract void zdecydujStrzał(ArrayList<Gracz> listaGraczy, int numerGracza);
-    protected void zdecydujLeczenie(ArrayList<Gracz> listaGraczy, int numerGracza) {
-        
+    protected abstract boolean zdecydujStrzał(ListaGraczy listaGraczy, int numerGracza);
+    protected boolean zdecydujLeczenie(ListaGraczy listaGraczy, int numerGracza) {
+        return listaGraczy.get(numerGracza).ulecz();
     }
-    private void rzućDynamit(Gracz sprawca) {
-        
+    private boolean rzućDynamit(List<Gracz> listaGraczy, int numerGracza) {
+        listaGraczy.get((numerGracza + 1) % listaGraczy.size()).otrzymajDynamit();
+        return true;
     }
 }

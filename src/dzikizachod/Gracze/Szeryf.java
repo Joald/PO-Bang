@@ -20,6 +20,7 @@ public class Szeryf extends Gracz {
     Szeryf(Strategia strategia) {
         super(strategia);
         punktyŻycia = 5;
+        maksymalnePunktyŻycia = 5;
     }
     
     @Override

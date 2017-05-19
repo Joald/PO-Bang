@@ -6,7 +6,11 @@
 package dzikizachod.Strategie;
 
 import dzikizachod.Gracze.Gracz;
+import dzikizachod.ListaGraczy;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -15,8 +19,9 @@ import java.util.ArrayList;
 public class StrategiaBandytyDomyslna extends StrategiaBandyty {
 
     @Override
-    protected void zdecydujStrzał(ArrayList<Gracz> listaGraczy, int numerGracza) {
-        
+    protected boolean zdecydujStrzał(ListaGraczy listaGraczy, int numerGracza) {
+        Gracz strzelający = listaGraczy.get(numerGracza);
+        return strzelający.strzelWZasięguOprócz("Bandyta", listaGraczy);
     }
     
 }

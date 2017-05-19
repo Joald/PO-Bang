@@ -6,7 +6,11 @@
 package dzikizachod.Strategie;
 
 import dzikizachod.Gracze.Gracz;
+import dzikizachod.ListaGraczy;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -15,8 +19,21 @@ import java.util.ArrayList;
 public class StrategiaSzeryfaDomyslna extends StrategiaSzeryfa {
 
     @Override
-    protected void zdecydujStrzał(ArrayList<Gracz> listaGraczy, int numerGracza) {
-
+    protected boolean zdecydujStrzał(ListaGraczy listaGraczy, int numerGracza) {
+        Gracz gracz = listaGraczy.get(numerGracza);
+        ArrayList<Gracz> graczeWZasięgu = listaGraczy.graczeWZasięgu(gracz);
+        List<Gracz> możliweCele;
+        możliweCele = graczeWZasięgu.stream()
+                .filter(g -> g.czyStrzeliłDoSzeryfa())
+                .collect(Collectors.toList());
+        if(możliweCele.isEmpty()) {
+            return gracz.strzelWZasięguOprócz("Szeryf", listaGraczy);
+        }
+        Random random = new Random();
+        Gracz cel = możliweCele.get(random.nextInt(możliweCele.size()));
+        gracz.strzel(cel);
+        return true;
+        
     }
     
 }

@@ -6,6 +6,7 @@
 package dzikizachod.Strategie;
 
 import dzikizachod.Gracze.Gracz;
+import dzikizachod.ListaGraczy;
 import java.util.ArrayList;
 
 /**
@@ -15,8 +16,9 @@ import java.util.ArrayList;
 public class StrategiaSzeryfaZliczajaca extends StrategiaSzeryfa {
 
     @Override
-    protected void zdecydujStrzał(ArrayList<Gracz> listaGraczy, int numerGracza) {
-        
+    protected boolean zdecydujStrzał(ListaGraczy listaGraczy, int numerGracza) {
+        Gracz gracz = listaGraczy.get(numerGracza);
+        return gracz.strzelDoPodejrzanych(listaGraczy);
     }
     
 }

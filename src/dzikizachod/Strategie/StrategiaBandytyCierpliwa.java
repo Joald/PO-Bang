@@ -6,6 +6,7 @@
 package dzikizachod.Strategie;
 
 import dzikizachod.Gracze.Gracz;
+import dzikizachod.ListaGraczy;
 import java.util.ArrayList;
 
 /**
@@ -15,8 +16,9 @@ import java.util.ArrayList;
 public class StrategiaBandytyCierpliwa extends StrategiaBandyty {
 
     @Override
-    protected void zdecydujStrzał(ArrayList<Gracz> listaGraczy, int numerGracza) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    protected boolean zdecydujStrzał(ListaGraczy listaGraczy, int numerGracza) {
+        Gracz gracz = listaGraczy.get(numerGracza);
+        return gracz.strzelWZasięguTylko("Szeryf", listaGraczy);
     }
     
 }

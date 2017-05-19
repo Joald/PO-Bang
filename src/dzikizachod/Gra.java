@@ -17,85 +17,33 @@ import java.util.List;
  */
 public class Gra {
     Gra() {
-        gracze = new ArrayList<>();
+        gracze = new ListaGraczy();
     }
-    private final ArrayList<Gracz> gracze;
+    private final ListaGraczy gracze;
+    private Drukarka drukarka;
     private PulaAkcji pulaAkcji;
-    private int numerSzeryfa;
-    
-    private boolean szeryfNieŻyje() {
-        for (Gracz g : gracze) {
-            if(g.toString().equals("Szeryf") && !g.czyŻyje()) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private boolean bandyciNieŻyją() {
-        boolean nieŻyjąWszyscyBandyci = true;
-        for (Gracz g : gracze) {
-            if(g.toString().equals("Bandyta") && g.czyŻyje()) {
-                nieŻyjąWszyscyBandyci = false;
-            }
-        }
-        return nieŻyjąWszyscyBandyci;
-    }
-    
-    private boolean koniecGry() {
-        return bandyciNieŻyją() || szeryfNieŻyje();
-    }
-    private void drukujGracza(Gracz druk, int liczbaPorządkowa, String wcięcie) {
-        if (druk.czyŻyje()) {
-            System.out.println(wcięcie + liczbaPorządkowa + ": " + druk.toString() + " (liczba żyć: " + druk.ilośćPunktówŻycia() + ")");
-        }
-        else {
-            System.out.println(wcięcie + liczbaPorządkowa + ": X (" + druk.toString() + ")");
-        }
-    }
-    
-    private void drukujListęGraczy(String wcięcie) {
-        System.out.println(wcięcie + "Gracze:");
-        wcięcie += "  ";
-        int i = 1;
-        for (Gracz g : gracze) {    
-            drukujGracza(g, i, wcięcie);
-            ++i;
-        }    
-    }
-    
-    private void drukujPoczątek() {
-        System.out.println("** START");
-        String wcięcie = "  ";
-        drukujListęGraczy(wcięcie);
-    }
-    
-    private void drukujTurę(int numerTury) {
-        System.out.println("** TURA " + numerTury);
-    }
     
     private void drukujKoniec() {
         System.out.println("** KONIEC");
         String wcięcie = "  ";
-        if(!koniecGry()) {
+        if(!gracze.koniecGry()) {
             System.out.println(wcięcie + "REMIS - OSIĄGNIĘTO LIMIT TUR");
             return;
         }
         System.out.println(wcięcie + "WYGRANA STRONA: ");
-        if (bandyciNieŻyją()) {
+        if (gracze.bandyciNieŻyją()) {
             System.out.println("szeryf i pomocnicy");
         }
         else {
             System.out.println("bandyci");
         }
     }
-    
     private int numerGraczaNaLiście(int numer) {
-        return (numer + numerSzeryfa) % gracze.size();
+        return (numer + gracze.getNumerSzeryfa()) % gracze.size();
     }
     
     private boolean przeprowadźTurę(int numerTury) {
-        drukujTurę(numerTury);
+        drukarka.drukujTurę(numerTury);
         String wcięcie = "  ";
         
         for (Gracz g : gracze) {
@@ -107,24 +55,17 @@ public class Gra {
         }
         
         for (int i = 0; i < gracze.size(); ++i) {
-            System.out.println(wcięcie + "GRACZ " + (i + 1 + numerSzeryfa) + " (" + gracze.get(numerGraczaNaLiście(i)) + "): ");
+            System.out.println(wcięcie + "GRACZ " + (i + 1) + " (" + gracze.get(numerGraczaNaLiście(i)) + "): ");
             Gracz g = gracze.get(numerGraczaNaLiście(i));
             g.drukujAkcje(wcięcie);
-            g.wykonajTurę(gracze, wcięcie, numerGraczaNaLiście(i));
+            g.wykonajTurę(gracze, wcięcie, numerGraczaNaLiście(i), pulaAkcji);
             
-            
+            if (gracze.koniecGry()) {
+                return false;
+            } 
         }
-        
-        return !koniecGry();
-    }
-    
-    private void ustalNumerSzeryfa() {
-        for(int i = 1; i <= gracze.size(); ++i) {
-            if (gracze.get(i - 1).toString().equals("Szeryf")) {
-                numerSzeryfa = i;
-                break;
-            }
-        }
+        drukarka.drukujListęGraczy(wcięcie);
+        return !gracze.koniecGry();
     }
     
     public void rozgrywka(List<Gracz> listaGraczy, PulaAkcji pulaAkcji) {
@@ -132,15 +73,17 @@ public class Gra {
         for (Gracz i : listaGraczy) {
             gracze.add(i.klonujGracza());
         }
+        
         Collections.shuffle(gracze);
         
         this.pulaAkcji = pulaAkcji.kopiujPulę();
+        drukarka = new Drukarka(gracze, this.pulaAkcji);
         
-        ustalNumerSzeryfa();
+        gracze.ustalNumerSzeryfa();
         
-        drukujPoczątek();
+        drukarka.drukujPoczątek();
         
-        for(int i = 1; i <= 42; ++i) {
+        for (int i = 1; i <= 42; ++i) {
             if(!przeprowadźTurę(i)) {
                 break;
             }

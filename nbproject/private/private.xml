@@ -3,14 +3,15 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/E:/po/dzikizachod/src/dzikizachod/Strategie/Bandyci/StrategiaBandytyCierpliwa.java</file>
-            <file>file:/E:/po/dzikizachod/src/dzikizachod/Strategie/Szeryf/StrategiaSzeryfaZliczajaca.java</file>
+            <file>file:/E:/po/dzikizachod/src/dzikizachod/Gracze/Bandyta.java</file>
             <file>file:/E:/po/dzikizachod/src/dzikizachod/Gra.java</file>
-            <file>file:/E:/po/dzikizachod/src/dzikizachod/Strategie/Bandyci/StrategiaBandytySprytna.java</file>
-            <file>file:/E:/po/dzikizachod/src/dzikizachod/Strategie/Pomocnicy/StrategiaPomocnikaSzeryfaDomyslna.java</file>
-            <file>file:/E:/po/dzikizachod/src/dzikizachod/Strategie/Bandyci/StrategiaBandytyDomyslna.java</file>
-            <file>file:/E:/po/dzikizachod/src/dzikizachod/Strategie/Pomocnicy/StrategiaPomocnikaSzeryfaZliczajaca.java</file>
-            <file>file:/E:/po/dzikizachod/src/dzikizachod/Strategie/Szeryf/StrategiaSzeryfaDomyslna.java</file>
+            <file>file:/E:/po/dzikizachod/src/dzikizachod/Kostka.java</file>
+            <file>file:/E:/po/dzikizachod/src/dzikizachod/dzikizachod.java</file>
+            <file>file:/E:/po/dzikizachod/src/dzikizachod/Strategie/StrategiaBandytyDomyslna.java</file>
+            <file>file:/E:/po/dzikizachod/src/dzikizachod/Strategie/Strategia.java</file>
+            <file>file:/E:/po/dzikizachod/src/dzikizachod/Gracze/Szeryf.java</file>
+            <file>file:/E:/po/dzikizachod/src/dzikizachod/Gracze/Gracz.java</file>
+            <file>file:/E:/po/dzikizachod/src/dzikizachod/ListaGraczy.java</file>
         </group>
     </open-files>
 </project-private>
