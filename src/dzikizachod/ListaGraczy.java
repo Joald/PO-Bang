@@ -24,8 +24,8 @@ public class ListaGraczy extends ArrayList<Gracz> {
     }
     
     public void ustalNumerSzeryfa() {
-        for(int i = 1; i <= this.size(); ++i) {
-            if (this.get(i - 1).toString().equals("Szeryf")) {
+        for(int i = 0; i < this.size(); ++i) {
+            if (this.get(i).toString().equals("Szeryf")) {
                 numerSzeryfa = i;
                 break;
             }
@@ -33,12 +33,7 @@ public class ListaGraczy extends ArrayList<Gracz> {
     }
     
     public boolean szeryfNieŻyje() {
-        for (Gracz g : this) {
-            if(g.toString().equals("Szeryf") && !g.czyŻyje()) {
-                return true;
-            }
-        }
-        return false;
+        return !get(numerSzeryfa).czyŻyje();
     }
     
     public boolean bandyciNieŻyją() {
@@ -56,40 +51,26 @@ public class ListaGraczy extends ArrayList<Gracz> {
     }
     
     public Gracz lewySąsiad(int numerGracza) {
-        Gracz doZwrócenia;
-        int i;
+        int i = numerGracza;
         
-        if(numerGracza == 0) {
-            i = this.size() - 1;
-            
-        }
-        else {
-            i = numerGracza - 1;
-        }
         do {
-            doZwrócenia = this.get(i);
             --i;
+            if(i < 0) {
+                i = size() - 1;
+            }
         }
         while(!this.get(i).czyŻyje());
-        return doZwrócenia;
+        return this.get(i);
     }
     
     public Gracz prawySąsiad(int numerGracza) {
-        Gracz doZwrócenia;
-        int i;
+        int i = numerGracza;
         
-        if(numerGracza == this.size() - 1) {
-            i = 0;
-        }
-        else {
-            i = numerGracza + 1;
-        }
         do {
-            doZwrócenia = this.get(i);
-            ++i;
+            i = (i + 1) % size();
         }
         while(!this.get(i).czyŻyje());
-        return doZwrócenia;
+        return this.get(i);
     }
     
     public Gracz lewySąsiad(Gracz gracz) {
@@ -111,33 +92,41 @@ public class ListaGraczy extends ArrayList<Gracz> {
         Gracz lewy = lewySąsiad(źródło);
         Gracz prawy = prawySąsiad(źródło);
         
-        while (zasięg > 0) {
+        for (int i = 0; i < zasięg; ++i) {
             doZwrócenia.add(lewy);
             doZwrócenia.add(prawy);
             lewy = lewySąsiad(this.indexOf(lewy));
             prawy = prawySąsiad(this.indexOf(prawy));
-            --zasięg;
+        }
+        
+        return doZwrócenia;
+    }
+    
+    public ArrayList<Gracz> graczePrzedSzeryfem(Gracz źródło, boolean lewo) {
+        ArrayList<Gracz> doZwrócenia = new ArrayList<>();
+        Gracz iter = sąsiad(źródło, lewo);
+        int zasięg = źródło.getZasięg();
+        int i = 1;
+        while (iter != get(getNumerSzeryfa()) && i <= zasięg) {
+            doZwrócenia.add(iter);
+            iter = sąsiad(iter, lewo);
+            ++i;
         }
         return doZwrócenia;
     }
     
     public ArrayList<Gracz> graczeWLewoPrzedSzeryfem(Gracz źródło) {
-        ArrayList<Gracz> doZwrócenia = new ArrayList<>();
-        Gracz iter = lewySąsiad(źródło);
-        while (iter != get(getNumerSzeryfa())) {
-            doZwrócenia.add(iter);
-            iter = lewySąsiad(iter);
-        }
-        return doZwrócenia;
+        return graczePrzedSzeryfem(źródło, true);
     }
     
     public ArrayList<Gracz> graczeWPrawoPrzedSzeryfem(Gracz źródło) {
-        ArrayList<Gracz> doZwrócenia = new ArrayList<>();
-        Gracz iter = prawySąsiad(źródło);
-        while (iter != get(getNumerSzeryfa())) {
-            doZwrócenia.add(iter);
-            iter = prawySąsiad(iter);
+        return graczePrzedSzeryfem(źródło, false);
+    }
+
+    public Gracz sąsiad(Gracz gracz, boolean lewo) {
+        if(lewo) {
+            return lewySąsiad(gracz);
         }
-        return doZwrócenia;
+        return prawySąsiad(gracz);
     }
 }

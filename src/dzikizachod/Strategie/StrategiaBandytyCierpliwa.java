@@ -8,6 +8,7 @@ package dzikizachod.Strategie;
 import dzikizachod.Gracze.Gracz;
 import dzikizachod.ListaGraczy;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -20,5 +21,4 @@ public class StrategiaBandytyCierpliwa extends StrategiaBandyty {
         Gracz gracz = listaGraczy.get(numerGracza);
         return gracz.strzelWZasięguTylko("Szeryf", listaGraczy);
     }
-    
 }

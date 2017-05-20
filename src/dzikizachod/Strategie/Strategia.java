@@ -35,18 +35,21 @@ public abstract class Strategia {
     
     private boolean zdecydujZasięgPlusJeden(Gracz sprawca) {
         sprawca.zwiększZasięg(1);
+        System.out.println("      ZASIEG_PLUS_JEDEN");
         return true;
     }
     private boolean zdecydujZasięgPlusDwa(Gracz sprawca) {
         sprawca.zwiększZasięg(2);
+        System.out.println("      ZASIEG_PLUS_DWA");
         return true;
     }
     protected abstract boolean zdecydujStrzał(ListaGraczy listaGraczy, int numerGracza);
     protected boolean zdecydujLeczenie(ListaGraczy listaGraczy, int numerGracza) {
-        return listaGraczy.get(numerGracza).ulecz();
+        boolean leczenie = listaGraczy.get(numerGracza).ulecz();
+        if(leczenie) {
+            System.out.println("      ULECZ");
+        }
+        return leczenie;
     }
-    private boolean rzućDynamit(List<Gracz> listaGraczy, int numerGracza) {
-        listaGraczy.get((numerGracza + 1) % listaGraczy.size()).otrzymajDynamit();
-        return true;
-    }
+    protected abstract boolean rzućDynamit(ListaGraczy listaGraczy, int numerGracza);
 }

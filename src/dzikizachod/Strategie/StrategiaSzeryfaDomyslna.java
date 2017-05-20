@@ -31,7 +31,7 @@ public class StrategiaSzeryfaDomyslna extends StrategiaSzeryfa {
         }
         Random random = new Random();
         Gracz cel = możliweCele.get(random.nextInt(możliweCele.size()));
-        gracz.strzel(cel);
+        gracz.strzel(cel, listaGraczy.indexOf(cel));
         return true;
         
     }

@@ -13,9 +13,9 @@ import java.util.ArrayList;
  * @author joald_000
  */
 public class Drukarka {
-    ArrayList<Gracz> gracze;
+    ListaGraczy gracze;
     PulaAkcji pulaAkcji;
-    Drukarka(ArrayList<Gracz> gracze, PulaAkcji pulaAkcji) {
+    Drukarka(ListaGraczy gracze, PulaAkcji pulaAkcji) {
         this.pulaAkcji = pulaAkcji;
         this.gracze = gracze;
     }
@@ -48,4 +48,21 @@ public class Drukarka {
         System.out.println("** TURA " + numerTury);
     }
     
+    
+    public void drukujKoniec() {
+        System.out.println("** KONIEC");
+        String wcięcie = "  ";
+        if(!gracze.koniecGry()) {
+            System.out.println(wcięcie + "REMIS - OSIĄGNIĘTO LIMIT TUR");
+            return;
+        }
+        String doDruku = wcięcie + "WYGRANA STRONA: ";
+        if (gracze.bandyciNieŻyją()) {
+            doDruku += "szeryf i pomocnicy";
+        }
+        else {
+            doDruku += "bandyci";
+        }
+        System.out.println(doDruku);
+    }
 }

@@ -5,12 +5,17 @@
  */
 package dzikizachod.Strategie;
 
-import dzikizachod.Strategie.Strategia;
+import dzikizachod.ListaGraczy;
 
 /**
  *
  * @author joald_000
  */
 public abstract class StrategiaSzeryfa extends Strategia {
+
+    @Override
+    protected boolean rzućDynamit(ListaGraczy listaGraczy, int numerGracza) {
+        return false;
+    }
     
 }

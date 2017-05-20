@@ -16,4 +16,7 @@ public class Kostka {
         Random random = new Random();
         return random.nextInt(6) + 1;
     }
+    public static boolean dynamitWybuchł() {
+        return Kostka.rzuć() == 1;
+    }
 }

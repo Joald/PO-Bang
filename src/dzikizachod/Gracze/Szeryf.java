@@ -17,7 +17,7 @@ public class Szeryf extends Gracz {
     public Szeryf() {
         this(new StrategiaSzeryfaDomyslna());
     }
-    Szeryf(Strategia strategia) {
+    public Szeryf(Strategia strategia) {
         super(strategia);
         punktyŻycia = 5;
         maksymalnePunktyŻycia = 5;

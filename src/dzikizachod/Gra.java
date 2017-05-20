@@ -23,24 +23,6 @@ public class Gra {
     private Drukarka drukarka;
     private PulaAkcji pulaAkcji;
     
-    private void drukujKoniec() {
-        System.out.println("** KONIEC");
-        String wcięcie = "  ";
-        if(!gracze.koniecGry()) {
-            System.out.println(wcięcie + "REMIS - OSIĄGNIĘTO LIMIT TUR");
-            return;
-        }
-        System.out.println(wcięcie + "WYGRANA STRONA: ");
-        if (gracze.bandyciNieŻyją()) {
-            System.out.println("szeryf i pomocnicy");
-        }
-        else {
-            System.out.println("bandyci");
-        }
-    }
-    private int numerGraczaNaLiście(int numer) {
-        return (numer + gracze.getNumerSzeryfa()) % gracze.size();
-    }
     
     private boolean przeprowadźTurę(int numerTury) {
         drukarka.drukujTurę(numerTury);
@@ -54,17 +36,27 @@ public class Gra {
             g.dodajZestaw(dobór);
         }
         
-        for (int i = 0; i < gracze.size(); ++i) {
-            System.out.println(wcięcie + "GRACZ " + (i + 1) + " (" + gracze.get(numerGraczaNaLiście(i)) + "): ");
-            Gracz g = gracze.get(numerGraczaNaLiście(i));
-            g.drukujAkcje(wcięcie);
-            g.wykonajTurę(gracze, wcięcie, numerGraczaNaLiście(i), pulaAkcji);
-            
+        int i = gracze.getNumerSzeryfa();
+        do {
             if (gracze.koniecGry()) {
                 return false;
-            } 
+            }
+            System.out.println(wcięcie + "GRACZ " + (i + 1) + " (" + gracze.get(i) + "): ");
+            Gracz g = gracze.get(i);
+            if(!g.czyŻyje()) {
+                System.out.println(wcięcie + "  MARTWY");
+                i = (i + 1) % gracze.size();
+                continue;
+            }
+            g.drukujAkcje(wcięcie);
+            g.wykonajTurę(gracze, wcięcie, i, pulaAkcji);
+            if(g.czyŻyje()) {
+                drukarka.drukujListęGraczy(wcięcie);
+            }
+            i = (i + 1) % gracze.size();
         }
-        drukarka.drukujListęGraczy(wcięcie);
+        while (i != gracze.getNumerSzeryfa());
+        
         return !gracze.koniecGry();
     }
     
@@ -89,7 +81,7 @@ public class Gra {
             }
         }
 
-        drukujKoniec();
+        drukarka.drukujKoniec();
     }
     
     public void rozgrywka(Gracz[] gracze, PulaAkcji pulaAkcji) {

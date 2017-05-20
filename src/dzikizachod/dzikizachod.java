@@ -5,11 +5,8 @@
  */
 package dzikizachod;
 
-import dzikizachod.*;
-import dzikizachod.Gracze.Bandyta;
-import dzikizachod.Gracze.Gracz;
-import dzikizachod.Gracze.PomocnikSzeryfa;
-import dzikizachod.Gracze.Szeryf;
+import dzikizachod.Gracze.*;
+import dzikizachod.Strategie.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,17 +18,24 @@ public class dzikizachod {
 
     
     public static void main(String[] args) {
+        Strategia sz = new StrategiaSzeryfaZliczajaca();
+        Strategia pz = new StrategiaPomocnikaSzeryfaZliczajaca();
+        Strategia bs = new StrategiaBandytySprytna();
+        Strategia bc = new StrategiaBandytyCierpliwa();
+        
+        
+        
         List<Gracz> gracze = new ArrayList<>();
-        gracze.add(new Szeryf());
-        for(int i=0;i<2;i++) gracze.add(new PomocnikSzeryfa());
-        for(int i=0;i<3;i++) gracze.add(new Bandyta());
+        gracze.add(new Szeryf(sz));
+        for(int i=0;i<10;i++) gracze.add(new PomocnikSzeryfa(pz));
+        for(int i=0;i<10;i++) gracze.add(new Bandyta(bs));
 
         // Kod wspólny dla obu wersji:
         PulaAkcji pulaAkcji = new PulaAkcji();
-        pulaAkcji.dodaj(Akcja.ULECZ, 20);
-        pulaAkcji.dodaj(Akcja.STRZEL, 60);
-        pulaAkcji.dodaj(Akcja.ZASIEG_PLUS_JEDEN, 3);
-        pulaAkcji.dodaj(Akcja.ZASIEG_PLUS_DWA, 1);
+        pulaAkcji.dodaj(Akcja.ULECZ, 50);
+        pulaAkcji.dodaj(Akcja.STRZEL, 600);
+        pulaAkcji.dodaj(Akcja.ZASIEG_PLUS_JEDEN, 30);
+        pulaAkcji.dodaj(Akcja.ZASIEG_PLUS_DWA, 10);
         pulaAkcji.dodaj(Akcja.DYNAMIT, 1);
 
         Gra gra = new Gra();

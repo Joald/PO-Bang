@@ -28,13 +28,14 @@ public abstract class Gracz {
     protected int punktyŻycia;
     protected int maksymalnePunktyŻycia;
     private boolean dynamit;
-    protected ArrayList<Akcja> zestaw;
-    protected int ilośćZabójstw;
-    protected int zasięg;
+    private boolean zabiłemBandytę;
+    private final ArrayList<Akcja> zestaw;
+    private int ilośćZabójstw;
+    private int zasięg;
     private int wystrzeloneWTurze;
-    private Set<Gracz> listaCelów;
-    private Set<Gracz> listaZabójstw;
-    protected static final int MAX_AKCJI_W_RĘKU = 5;
+    private final Set<Gracz> listaCelów;
+    private final Set<Gracz> listaZabójstw;
+    private static final int MAX_AKCJI_W_RĘKU = 5;
     
     Gracz(Strategia strategia) {
         this.strategia = strategia;
@@ -109,24 +110,23 @@ public abstract class Gracz {
         punktyŻycia -= ilość;
     }
     
-    public boolean dynamitWybuchł() {
-        return Kostka.rzuć() == 1;
-    }
-    
     public void wykonajTurę(ListaGraczy listaGraczy, String wcięcie, int numerGracza, PulaAkcji pulaAkcji) {
+        wcięcie += "  ";
+        zabiłemBandytę = false;
         if(dynamit) {
-            String dynamit = wcięcie + "Dynamit: ";
+            String doDruku = wcięcie + "Dynamit: ";
             
-            if(dynamitWybuchł()) {
+            if(Kostka.dynamitWybuchł()) {
                 otrzymajObrażenia(3);
-                dynamit += "WYBUCHŁ";
-                
+                doDruku += "WYBUCHŁ";
+                this.dynamit = false;
             }
             else {
-                dynamit += "PRZECHODZI DALEJ";
-                strategia.zdecydujRuch(Akcja.DYNAMIT, listaGraczy, numerGracza);
+                doDruku += "PRZECHODZI DALEJ";
+                listaGraczy.prawySąsiad(this).otrzymajDynamit();
+                this.dynamit = false;
             }
-            System.out.println(dynamit);
+            System.out.println(doDruku);
             
             if (!czyŻyje()) {
                 System.out.println(wcięcie + "Ruchy:");
@@ -144,6 +144,9 @@ public abstract class Gracz {
                 continue;
             }
             wykorzystania.add(strategia.zdecydujRuch(a, listaGraczy, numerGracza));
+            if(listaGraczy.koniecGry()) {
+                break;
+            }
         }
         wystrzeloneWTurze = 0;
         for (int i = wykorzystania.size() - 1; i >= 0; --i) {
@@ -172,13 +175,17 @@ public abstract class Gracz {
         return false;
     }
     
-    public void strzel(Gracz cel) {
+    public void strzel(Gracz cel, int numer) {
+        System.out.println("      STRZAŁ " + (numer + 1));
         cel.otrzymajObrażenia(1);
         listaCelów.add(cel);
         wystrzeloneWTurze++;
         if(!cel.czyŻyje()) {
             this.ilośćZabójstw++;
             this.listaZabójstw.add(cel);
+            if(cel.toString().equals("Bandyta")) {
+                this.zabiłemBandytę = true;
+            }
         }
     }
     
@@ -196,11 +203,6 @@ public abstract class Gracz {
         ArrayList<Gracz> graczeWZasięgu = listaGraczy.graczeWZasięgu(this);
         Gracz szeryf = listaGraczy.get(listaGraczy.getNumerSzeryfa());
         
-        if (graczeWZasięgu.contains(szeryf) && !wyjątek.equals("Szeryf")) {
-            this.strzel(szeryf);
-            return true;
-        }
-        
         List<Gracz> możliweCele;
         możliweCele = graczeWZasięgu.stream()
                 .filter(gracz -> gracz.toString().equals(wyjątek) == czyDobrze)
@@ -210,7 +212,7 @@ public abstract class Gracz {
         }
         Random random = new Random();
         Gracz cel = możliweCele.get(random.nextInt(możliweCele.size()));
-        this.strzel(cel);
+        this.strzel(cel, listaGraczy.indexOf(cel));
         return true;
     }
     
@@ -218,7 +220,6 @@ public abstract class Gracz {
         return this.strzelWZasięgu(wzór, listaGraczy, true);
     }
     
-    ///Jeśli szeryf nie jest wyjątkiem, jest priorytetem.
     public boolean strzelWZasięguOprócz(String wyjątek, ListaGraczy listaGraczy) {
         return this.strzelWZasięgu(wyjątek, listaGraczy, false);
     }
@@ -234,7 +235,7 @@ public abstract class Gracz {
         }
         Random random = new Random();
         Gracz cel = możliweCele.get(random.nextInt(możliweCele.size()));
-        this.strzel(cel);
+        this.strzel(cel, listaGraczy.indexOf(cel));
         return true;
     }
     
@@ -247,6 +248,16 @@ public abstract class Gracz {
         return false;
     }
     
+    public int liczbaZabitychPomocników() {
+        return (int) listaZabójstw.stream()
+                .filter((i) -> (i.toString().equals("Pomocnik Szeryfa"))).count();
+    }
+    
+    public int liczbaZabitychBandytów() {
+        return (int) listaZabójstw.stream()
+                .filter((i) -> (i.toString().equals("Bandyta"))).count();
+    }
+    
     public boolean czyPodejrzany() {
         if(toString().equals("Szeryf")) {
             return false;
@@ -254,80 +265,62 @@ public abstract class Gracz {
         if(this.czyStrzeliłDoSzeryfa()) {
             return true;
         }
-        int liczbaZabitychPomocników = 0;
-        int liczbaZabitychBandytów = 0;
-        for (Gracz i : listaZabójstw) {
-            switch(i.toString()) {
-                case "Bandyta":
-                    liczbaZabitychBandytów++;
-                    break;
-                case "Pomocnik Szeryfa":
-                    liczbaZabitychPomocników++;
-                    break;
-                default:
-                    break;
+        return liczbaZabitychPomocników() > liczbaZabitychBandytów();
+    }
+    
+    private void zabijNajsłabszego(String typ, boolean lewo, ListaGraczy listaGraczy) {
+        Gracz iter = listaGraczy.sąsiad(this, lewo);
+        Gracz najsłabszy = new Szeryf();
+        najsłabszy.punktyŻycia = Integer.MAX_VALUE;
+        Gracz strażnik = najsłabszy;
+        while (iter != listaGraczy.get(listaGraczy.getNumerSzeryfa())) {
+            if(iter.toString().equals("Pomocnik Szeryfa") && najsłabszy.ilośćPunktówŻycia() > iter.ilośćPunktówŻycia()) {
+                najsłabszy = iter;
             }
+            iter = listaGraczy.sąsiad(iter, lewo);
         }
-        return liczbaZabitychPomocników > liczbaZabitychBandytów;
+        if(najsłabszy == strażnik) {
+            return;
+        }
+        while(najsłabszy.czyŻyje()) {
+            this.strzel(najsłabszy, listaGraczy.indexOf(najsłabszy));
+        }
     }
     
     public void zabijNajsłabszegoLewegoPomocnika(ListaGraczy listaGraczy) {
-        Gracz iter = listaGraczy.lewySąsiad(this);
-        Gracz najsłabszy = new Szeryf();
-        najsłabszy.punktyŻycia = Integer.MAX_VALUE;
-        while (iter != listaGraczy.get(listaGraczy.getNumerSzeryfa())) {
-            if(iter.toString().equals("Pomocnik Szeryfa") && najsłabszy.ilośćPunktówŻycia() > iter.ilośćPunktówŻycia()) {
-                najsłabszy = iter;
-            }
-            iter = listaGraczy.lewySąsiad(iter);
-        }
-        for (int i = 0; i < najsłabszy.ilośćPunktówŻycia(); ++i) {
-            this.strzel(najsłabszy);
-        }
+        zabijNajsłabszego("Pomocnik Szeryfa", true, listaGraczy);
     }
     
     public void zabijNajsłabszegoLewegoBandytę(ListaGraczy listaGraczy) {
-        Gracz iter = listaGraczy.lewySąsiad(this);
-        Gracz najsłabszy = new Szeryf();
-        najsłabszy.punktyŻycia = Integer.MAX_VALUE;
-        while (iter != listaGraczy.get(listaGraczy.getNumerSzeryfa())) {
-            if(iter.toString().equals("Bandyta") && najsłabszy.ilośćPunktówŻycia() > iter.ilośćPunktówŻycia()) {
-                najsłabszy = iter;
-            }
-            iter = listaGraczy.lewySąsiad(iter);
-        }
-        for (int i = 0; i < najsłabszy.ilośćPunktówŻycia(); ++i) {
-            this.strzel(najsłabszy);
-        }
+        zabijNajsłabszego("Bandyta", true, listaGraczy);
     }
     
     public void zabijNajsłabszegoPrawegoPomocnika(ListaGraczy listaGraczy) {
-        Gracz iter = listaGraczy.lewySąsiad(this);
-        Gracz najsłabszy = new Szeryf();
-        najsłabszy.punktyŻycia = Integer.MAX_VALUE;
-        while (iter != listaGraczy.get(listaGraczy.getNumerSzeryfa())) {
-            if(iter.toString().equals("Pomocnik Szeryfa") && najsłabszy.ilośćPunktówŻycia() > iter.ilośćPunktówŻycia()) {
-                najsłabszy = iter;
-            }
-            iter = listaGraczy.prawySąsiad(iter);
-        }
-        for (int i = 0; i < najsłabszy.ilośćPunktówŻycia(); ++i) {
-            this.strzel(najsłabszy);
-        }
+        zabijNajsłabszego("Pomocnik Szeryfa", false, listaGraczy);
     }
     
     public void zabijNajsłabszegoPrawegoBandytę(ListaGraczy listaGraczy) {
-        Gracz iter = listaGraczy.lewySąsiad(this);
-        Gracz najsłabszy = new Szeryf();
-        najsłabszy.punktyŻycia = Integer.MAX_VALUE;
-        while (iter != listaGraczy.get(listaGraczy.getNumerSzeryfa())) {
-            if(iter.toString().equals("Bandyta") && najsłabszy.ilośćPunktówŻycia() > iter.ilośćPunktówŻycia()) {
-                najsłabszy = iter;
-            }
-            iter = listaGraczy.prawySąsiad(iter);
+        zabijNajsłabszego("Bandyta", false, listaGraczy);
+    }
+    
+    public boolean czyZabiłBandytęWTejTurze() {
+        return zabiłemBandytę;
+    }
+    
+    public boolean zabijLosowegoBandytęWZasięgu(ListaGraczy listaGraczy) {
+        ArrayList<Gracz> graczeWZasięgu = listaGraczy.graczeWZasięgu(this);
+        List<Gracz> możliweCele;
+        możliweCele = graczeWZasięgu.stream()
+                .filter(gracz -> gracz.toString().equals("Bandyta") && this.ilośćStrzałów() >= gracz.ilośćPunktówŻycia())
+                .collect(Collectors.toList());
+        if(możliweCele.isEmpty()) {
+            return false;
         }
-        for (int i = 0; i < najsłabszy.ilośćPunktówŻycia(); ++i) {
-            this.strzel(najsłabszy);
+        Random random = new Random();
+        Gracz cel = możliweCele.get(random.nextInt(możliweCele.size()));
+        while (cel.czyŻyje()) {
+            this.strzel(cel, listaGraczy.indexOf(cel));
         }
+        return true;
     }
 }
